@@ -296,11 +296,14 @@ class MainViewController: UIViewController {
     }
     
     private func loadStocks() {
-        StockService.shared.fetchStocks { [weak self] stocks, error in
+        StockService.shared.fetchStocks { [weak self] result in
             DispatchQueue.main.async {
-                if let stocks = stocks {
+                switch result {
+                case .success(let stocks):
                     self?.allStocks = stocks
                     self?.updateDisplayedStocks()
+                case .failure(let error):
+                    print("Failed to load stocks: \(error.localizedDescription)")
                 }
             }
         }
