@@ -75,5 +75,10 @@ class SearchBarView: UIView {
     @objc private func backTapped() {
         onBack?()
     }
+    
+    func resetSearchBar() {
+        textField.text = ""
+        textField.resignFirstResponder()
+    }
 }
  

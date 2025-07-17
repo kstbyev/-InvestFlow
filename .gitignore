@@ -1,7 +1,6 @@
 # Xcode
 .DS_Store
 */build/*
-DerivedData/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -13,20 +12,22 @@ DerivedData/
 xcuserdata
 *.xccheckout
 *.moved-aside
+DerivedData
+.idea/
+*.hmap
 *.xcuserstate
-*.xcscmblueprint
-
-# Swift Package Manager
-.build/
-Packages/
-Package.pins
-Package.resolved
+*.xcworkspace
+!default.xcworkspace
 
 # CocoaPods
 Pods/
 
 # Carthage
 Carthage/Build
+
+# Swift Package Manager
+.build/
+.swiftpm/
 
 # fastlane
 fastlane/report.xml
