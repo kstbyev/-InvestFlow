@@ -66,4 +66,14 @@ class SearchBarView: UIView {
         textField.placeholder = "Find company or ticker"
         textField.font = UIFont.systemFont(ofSize: 17)
         textField.textColor = .black
+    }
+    
+    private func observeBackButton() {
+        backButton.isHidden = !showsBackButton
+    }
+    
+    @objc private func backTapped() {
+        onBack?()
+    }
+}
  

@@ -238,4 +238,21 @@ class StockTableViewCell: UITableViewCell {
                     if let icon = UIImage(named: fallbackName) {
                         self.logoImageView.image = icon
                     } else {
-                        s
+                        self.logoImageView.image = UIImage(systemName: "building.2.fill")
+                    }
+                }
+                return
+            }
+            StockTableViewCell.imageCache.setObject(image, forKey: url as NSURL)
+            DispatchQueue.main.async {
+                self.logoImageView.image = image
+            }
+        }.resume()
+    }
+    
+    @objc private func favoriteButtonTapped() {
+        if let stock = stock {
+            delegate?.didTapFavoriteButton(for: stock)
+        }
+    }
+}
