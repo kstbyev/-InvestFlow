@@ -15,16 +15,14 @@ class MainViewController: UIViewController {
         case favorites
     }
     
-    // Новый UI для табов
     private let tabStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.spacing = 12
-        stackView.distribution = .fillProportionally
+        stackView.spacing = 15
+        stackView.distribution = .fill
         stackView.backgroundColor = .clear
         stackView.layer.cornerRadius = 0
         stackView.layer.masksToBounds = false
-        // Удаляем тень и разделитель
         return stackView
     }()
     
@@ -34,6 +32,7 @@ class MainViewController: UIViewController {
         label.font = UIFont.boldSystemFont(ofSize: 28)
         label.textColor = .black
         label.isUserInteractionEnabled = true
+        label.textAlignment = .left
         return label
     }()
     
@@ -43,6 +42,7 @@ class MainViewController: UIViewController {
         label.font = UIFont.boldSystemFont(ofSize: 22)
         label.textColor = .lightGray
         label.isUserInteractionEnabled = true
+        label.textAlignment = .left
         return label
     }()
     
@@ -62,6 +62,7 @@ class MainViewController: UIViewController {
         label.isHidden = true
         return label
     }()
+    
     private let recentSearchesLabel: UILabel = {
         let label = UILabel()
         label.text = "You've searched for this"
@@ -70,8 +71,10 @@ class MainViewController: UIViewController {
         label.isHidden = true
         return label
     }()
+    
     private let popularRequests = ["Apple", "Amazon", "Google", "Tesla", "Microsoft", "First Solar", "Alibaba", "Facebook", "Mastercard"]
     private let recentSearches = ["Nvidia", "Nokia", "Yandex", "GM", "Microsoft", "Baidu", "Intel", "AMD", "Visa", "Bank of America"]
+    
     private lazy var popularCollectionView: UICollectionView = {
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.minimumLineSpacing = 12
@@ -85,6 +88,7 @@ class MainViewController: UIViewController {
         collectionView.isHidden = true
         return collectionView
     }()
+    
     private lazy var recentCollectionView: UICollectionView = {
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.minimumLineSpacing = 12
@@ -98,6 +102,7 @@ class MainViewController: UIViewController {
         collectionView.isHidden = true
         return collectionView
     }()
+    
     private let resultsTableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .systemBackground
@@ -106,8 +111,9 @@ class MainViewController: UIViewController {
         tableView.isHidden = true
         return tableView
     }()
-    private var searchBarTopConstraint: Constraint? = nil
-    private var tabStackViewTopConstraint: Constraint? = nil
+    
+    private var searchBarTopConstraint: Constraint?
+    private var tabStackViewTopConstraint: Constraint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -126,9 +132,22 @@ class MainViewController: UIViewController {
     }
     
     private func setupUI() {
+        setupViewAppearance()
+        setupSearchBar()
+        setupSubviews()
+        setupTabLabels()
+        setupTableViews()
+        updateTabAppearance()
+    }
+    
+    private func setupViewAppearance() {
         view.backgroundColor = .systemBackground
         title = "InvestFlow"
+    }
+    
+    private func setupSearchBar() {
         searchBarView.showsBackButton = false
+        searchBarView.updateIconPosition()
         searchBarView.onBack = { [weak self] in
             self?.showMainLayout()
             self?.searchBarView.resetSearchBar()
@@ -136,6 +155,9 @@ class MainViewController: UIViewController {
             self?.filteredStocks = []
             self?.resultsTableView.reloadData()
         }
+    }
+    
+    private func setupSubviews() {
         view.addSubview(searchBarView)
         view.addSubview(tableView)
         view.addSubview(tabStackView)
@@ -143,40 +165,74 @@ class MainViewController: UIViewController {
         view.addSubview(popularCollectionView)
         view.addSubview(recentSearchesLabel)
         view.addSubview(recentCollectionView)
-        // resultsTableView добавляем последним, чтобы он был поверх всех
         view.addSubview(resultsTableView)
+        
         tabStackView.addArrangedSubview(stocksLabel)
         tabStackView.addArrangedSubview(favouritesLabel)
+    }
+    
+    private func setupTabLabels() {
+        stocksLabel.setContentHuggingPriority(.required, for: .horizontal)
+        stocksLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        favouritesLabel.setContentHuggingPriority(.required, for: .horizontal)
+        favouritesLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        tabStackView.alpha = 1
+        tabStackView.isHidden = false
+    }
+    
+    private func setupTableViews() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(StockTableViewCell.self, forCellReuseIdentifier: StockTableViewCell.identifier)
+        
         resultsTableView.delegate = self
         resultsTableView.dataSource = self
         resultsTableView.register(StockTableViewCell.self, forCellReuseIdentifier: StockTableViewCell.identifier)
+        
         searchBarView.textField.delegate = self
-        updateTabAppearance()
     }
     
     private func setupConstraints() {
+        setupSearchBarConstraints()
+        setupTabStackViewConstraints()
+        setupTableViewConstraints()
+        setupResultsTableViewConstraints()
+        setupPopularRequestsConstraints()
+    }
+    
+    private func setupSearchBarConstraints() {
         searchBarView.snp.remakeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(48)
         }
+    }
+    
+    private func setupTabStackViewConstraints() {
         tabStackView.snp.remakeConstraints { make in
-            make.top.equalTo(searchBarView.snp.bottom).offset(16)
+            make.top.equalTo(searchBarView.snp.bottom).offset(12)
             make.leading.equalToSuperview().offset(16)
             make.height.equalTo(32)
         }
+        tabStackView.spacing = 15
+    }
+    
+    private func setupTableViewConstraints() {
         tableView.snp.remakeConstraints { make in
-            make.top.equalTo(tabStackView.snp.bottom).offset(16)
+            make.top.equalTo(tabStackView.snp.bottom).offset(12)
             make.leading.trailing.bottom.equalToSuperview()
         }
+    }
+    
+    private func setupResultsTableViewConstraints() {
         resultsTableView.snp.remakeConstraints { make in
             make.top.equalTo(searchBarView.snp.bottom).offset(20)
             make.leading.trailing.bottom.equalToSuperview()
         }
-        // Теги располагаются независимо, поверх tableView, и скрываются вне поиска
+    }
+    
+    private func setupPopularRequestsConstraints() {
         popularRequestsLabel.snp.remakeConstraints { make in
             make.top.equalTo(searchBarView.snp.bottom).offset(24)
             make.leading.trailing.equalToSuperview().inset(16)
@@ -195,7 +251,6 @@ class MainViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.greaterThanOrEqualTo(40)
         }
-        view.layoutIfNeeded()
     }
     
     private func setupActions() {
@@ -223,9 +278,9 @@ class MainViewController: UIViewController {
             self.resultsTableView.isHidden = true
             self.tabStackView.isHidden = true
             self.tableView.isHidden = true
-            // Откат: убираю reloadData
         }
     }
+    
     private func showResultsLayout() {
         searchBarView.showsBackButton = true
         UIView.animate(withDuration: 0.25) {
@@ -244,9 +299,9 @@ class MainViewController: UIViewController {
             self.resultsTableView.isHidden = false
             self.tabStackView.isHidden = true
             self.tableView.isHidden = true
-            // searchBarView всегда видим
         }
     }
+    
     private func showMainLayout() {
         searchBarView.showsBackButton = false
         UIView.animate(withDuration: 0.25) {
@@ -255,16 +310,16 @@ class MainViewController: UIViewController {
             self.recentSearchesLabel.alpha = 0
             self.recentCollectionView.alpha = 0
             self.resultsTableView.alpha = 0
-            self.tabStackView.alpha = 1
             self.tableView.alpha = 1
+            self.tabStackView.alpha = 1
         } completion: { _ in
             self.popularRequestsLabel.isHidden = true
             self.popularCollectionView.isHidden = true
             self.recentSearchesLabel.isHidden = true
             self.recentCollectionView.isHidden = true
             self.resultsTableView.isHidden = true
-            self.tabStackView.isHidden = false
             self.tableView.isHidden = false
+            self.tabStackView.isHidden = false
         }
     }
     
@@ -324,7 +379,6 @@ class MainViewController: UIViewController {
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == resultsTableView {
-            print("[DEBUG] numberOfRowsInSection (resultsTableView): \(filteredStocks.count)")
             return filteredStocks.count
         }
         return displayedStocks.count
@@ -338,7 +392,7 @@ extension MainViewController: UITableViewDataSource {
             let stock = filteredStocks[indexPath.row]
             cell.configure(with: stock, indexPath: indexPath)
             cell.delegate = self
-            // Fade-in анимация появления ячейки
+            
             cell.alpha = 0
             UIView.animate(withDuration: 0.3, delay: 0.05 * Double(indexPath.row), options: [.curveEaseInOut], animations: {
                 cell.alpha = 1
@@ -409,6 +463,10 @@ extension MainViewController: UITableViewDelegate {
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100 // Увеличиваем высоту ячеек для большего скроллинга
+    }
 }
 
 // MARK: - UITextFieldDelegate
@@ -435,7 +493,6 @@ extension MainViewController: UITextFieldDelegate {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
             .lowercased()
-        print("[DEBUG] searchText: '", searchText, "'")
         if searchText.isEmpty {
             isSearching = false
             filteredStocks = []
@@ -461,10 +518,8 @@ extension MainViewController: UITextFieldDelegate {
                     .lowercased()
                 let companyContains = company.contains(searchText)
                 let tickerContains = ticker.contains(searchText)
-                print("[DEBUG] company: '", company, "', ticker: '", ticker, "', companyContains: ", companyContains, ", tickerContains: ", tickerContains)
                 return companyContains || tickerContains
             }
-            print("[DEBUG] filteredStocks.count = \(filteredStocks.count)")
             // Показываем только resultsTableView
             resultsTableView.isHidden = false
             tabStackView.isHidden = true
@@ -559,10 +614,62 @@ extension MainViewController: SearchViewControllerDelegate {
 
 extension MainViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Проверяем, что мы в основном режиме (не в поиске)
+        guard !isSearching && searchBarView.textField.text?.isEmpty != false else {
+            return
+        }
+        
         let offsetY = scrollView.contentOffset.y
-        let shouldHide = offsetY > 20
-        UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut]) {
-            self.searchBarView.alpha = shouldHide ? 0 : 1
+        let shouldHideSearchBar = offsetY > 20
+        
+        // Анимация для поисковой строки
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut, .allowUserInteraction]) {
+            self.searchBarView.alpha = shouldHideSearchBar ? 0 : 1
+        }
+        
+        // Табы всегда остаются видимыми при скроллинге
+        if shouldHideSearchBar {
+            // Когда поиск скрыт, табы остаются наверху
+            tabStackView.alpha = 1
+            tabStackView.isHidden = false
+            
+            // РЕФЕРЕНС: табы максимально близко друг к другу
+            tabStackView.snp.remakeConstraints { make in
+                make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
+                make.leading.equalToSuperview().offset(16)
+                make.height.equalTo(44)
+            }
+            // Обновляем spacing для максимальной близости
+            tabStackView.spacing = 15
+            
+            // Обновляем констрейнты для таблицы - уменьшаем отступ
+            tableView.snp.remakeConstraints { make in
+                make.top.equalTo(tabStackView.snp.bottom).offset(8)
+                make.leading.trailing.bottom.equalToSuperview()
+            }
+        } else {
+            // Когда поиск виден, табы остаются под ним
+            tabStackView.alpha = 1
+            tabStackView.isHidden = false
+            
+            // РЕФЕРЕНС: табы максимально близко друг к другу
+            tabStackView.snp.remakeConstraints { make in
+                make.top.equalTo(searchBarView.snp.bottom).offset(16)
+                make.leading.equalToSuperview().offset(16)
+                make.height.equalTo(44)
+            }
+            // Обновляем spacing для максимальной близости
+            tabStackView.spacing = 15
+            
+            tableView.snp.remakeConstraints { make in
+                make.top.equalTo(tabStackView.snp.bottom).offset(16)
+                make.leading.trailing.bottom.equalToSuperview()
+            }
+        }
+        
+        // Обновляем layout для плавной анимации
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
         }
     }
 } 

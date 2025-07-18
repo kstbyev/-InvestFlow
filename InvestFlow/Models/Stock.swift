@@ -127,7 +127,7 @@ extension Stock {
                   logoURL: "https://example.com/google.png"),
             
             Stock(ticker: "MSFT",
-                  companyName: "Microsoft Corporation",
+                  companyName: "Microsoft Corp",
                   price: 245.17,
                   priceChange: 1.23,
                   priceChangePercent: 0.50,
@@ -135,7 +135,7 @@ extension Stock {
                   logoURL: "https://example.com/microsoft.png"),
             
             Stock(ticker: "AMZN",
-                  companyName: "Amazon.com Inc.",
+                  companyName: "Amazon.com",
                   price: 3116.42,
                   priceChange: -23.42,
                   priceChangePercent: -0.75,
