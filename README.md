@@ -48,17 +48,17 @@ git clone https://github.com/kstbyev/-InvestFlow.git
 
 ### List 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/f78ef7a7-6507-42e4-9869-9b8758bdb53d" width="200" alt="Home Screen">
+  <img src="https://github.com/user-attachments/assets/5f9a24e9-6de6-4f41-86ee-f3ffab087522" width="200" alt="Home Screen">
 </p>
 
 ### Scrolled List
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/4b86997f-8201-4ff2-bb6d-bd4de7ff68b9" width="200" alt="Scrolled List">
+  <img src="https://github.com/user-attachments/assets/3687969b-eb2e-4bce-b82c-4fb922edfeb7" width="200" alt="Scrolled List">
 </p>
 
 ### List (Favourite)
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/bcdb5bda-4bc7-4561-a57f-7a96ad7b28ff" width="200" alt="List (Favourite)">
+  <img src="https://github.com/user-attachments/assets/b2084155-69d3-4a4d-a504-540d480da795" width="200" alt="List (Favourite)">
 </p>
 
 ### Search (Empty)
